@@ -234,7 +234,7 @@ class TestUI(qg.QDialog):
             pmc.setAttr(self.sigma_shader.color.colorR, 0.0)
             pmc.setAttr(self.sigma_shader.color.colorG, 0.5)
             pmc.setAttr(self.sigma_shader.color.colorB, 1.0)
-            pmc.setAttr(self.sigma_shader.transparency, (0.5, 0.5, 0.5))
+            pmc.setAttr(self.sigma_shader.transparency, (0.85, 0.85, 0.85))
             self.sigma_sg = pm.sets(renderable=1, noSurfaceShader=1, empty=1, n="sigmaLmbt_SG")
             pm.connectAttr(self.sigma_shader.outColor, self.sigma_sg.surfaceShader)
             self.falloff_group = pm.group(empty=1, n="GRP_rbf_falloff")

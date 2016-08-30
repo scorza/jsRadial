@@ -246,6 +246,10 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputTranslateX);
 	attributeAffects(aGlobalSigma, aOutputTranslateX);
 	attributeAffects(aUseGlobalSigma, aOutputTranslateX);
+	attributeAffects(aTranslateMultiplier, aOutputTranslateX);
+	attributeAffects(aRotateMultiplier, aOutputTranslateX);
+	attributeAffects(aScaleMultiplier, aOutputTranslateX);
+	attributeAffects(aRGBAMultiplier, aOutputTranslateX);
 	attributeAffects(aIncludeTranslateX, aOutputTranslateX);
 	attributeAffects(aIncludeTranslateY, aOutputTranslateX);
 	attributeAffects(aIncludeTranslateZ, aOutputTranslateX);
@@ -265,23 +269,68 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aTargetColor, aOutputTranslateX);
 	attributeAffects(aTargetSigma, aOutputTranslateX);
 
+	attributeAffects(aFunctionType, aOutputTranslateY);
+	attributeAffects(aHeight, aOutputTranslateY);
+	attributeAffects(aGlobalSigma, aOutputTranslateY);
+	attributeAffects(aUseGlobalSigma, aOutputTranslateY);
+	attributeAffects(aTranslateMultiplier, aOutputTranslateY);
+	attributeAffects(aRotateMultiplier, aOutputTranslateY);
+	attributeAffects(aScaleMultiplier, aOutputTranslateY);
+	attributeAffects(aRGBAMultiplier, aOutputTranslateY);
+	attributeAffects(aIncludeTranslateX, aOutputTranslateY);
+	attributeAffects(aIncludeTranslateY, aOutputTranslateY);
+	attributeAffects(aIncludeTranslateZ, aOutputTranslateY);
+	attributeAffects(aIncludeRotate, aOutputTranslateY);
+	attributeAffects(aIncludeScaleX, aOutputTranslateY);
+	attributeAffects(aIncludeScaleY, aOutputTranslateY);
+	attributeAffects(aIncludeScaleZ, aOutputTranslateY);
+	attributeAffects(aIncludeR, aOutputTranslateY);
+	attributeAffects(aIncludeG, aOutputTranslateY);
+	attributeAffects(aIncludeB, aOutputTranslateY);
+	attributeAffects(aIncludeA, aOutputTranslateY);
+	attributeAffects(aInputIncludes, aOutputTranslateY);
 	attributeAffects(aPoseMatrix, aOutputTranslateY);
 	attributeAffects(aPoseColor, aOutputTranslateY);
+	attributeAffects(aPoseTransparency, aOutputTranslateY);
 	attributeAffects(aTargetMatrix, aOutputTranslateY);
 	attributeAffects(aTargetColor, aOutputTranslateY);
 	attributeAffects(aTargetSigma, aOutputTranslateY);
 
+	attributeAffects(aFunctionType, aOutputTranslateZ);
+	attributeAffects(aHeight, aOutputTranslateZ);
+	attributeAffects(aGlobalSigma, aOutputTranslateZ);
+	attributeAffects(aUseGlobalSigma, aOutputTranslateZ);
+	attributeAffects(aTranslateMultiplier, aOutputTranslateZ);
+	attributeAffects(aRotateMultiplier, aOutputTranslateZ);
+	attributeAffects(aScaleMultiplier, aOutputTranslateZ);
+	attributeAffects(aRGBAMultiplier, aOutputTranslateZ);
+	attributeAffects(aIncludeTranslateX, aOutputTranslateZ);
+	attributeAffects(aIncludeTranslateY, aOutputTranslateZ);
+	attributeAffects(aIncludeTranslateZ, aOutputTranslateZ);
+	attributeAffects(aIncludeRotate, aOutputTranslateZ);
+	attributeAffects(aIncludeScaleX, aOutputTranslateZ);
+	attributeAffects(aIncludeScaleY, aOutputTranslateZ);
+	attributeAffects(aIncludeScaleZ, aOutputTranslateZ);
+	attributeAffects(aIncludeR, aOutputTranslateZ);
+	attributeAffects(aIncludeG, aOutputTranslateZ);
+	attributeAffects(aIncludeB, aOutputTranslateZ);
+	attributeAffects(aIncludeA, aOutputTranslateZ);
+	attributeAffects(aInputIncludes, aOutputTranslateZ);
 	attributeAffects(aPoseMatrix, aOutputTranslateZ);
 	attributeAffects(aPoseColor, aOutputTranslateZ);
+	attributeAffects(aPoseTransparency, aOutputTranslateZ);
 	attributeAffects(aTargetMatrix, aOutputTranslateZ);
 	attributeAffects(aTargetColor, aOutputTranslateZ);
 	attributeAffects(aTargetSigma, aOutputTranslateZ);
-
 
 	attributeAffects(aFunctionType, aOutputColor);
 	attributeAffects(aHeight, aOutputColor);
 	attributeAffects(aGlobalSigma, aOutputColor);
 	attributeAffects(aUseGlobalSigma, aOutputColor);
+	attributeAffects(aTranslateMultiplier, aOutputColor);
+	attributeAffects(aRotateMultiplier, aOutputColor);
+	attributeAffects(aScaleMultiplier, aOutputColor);
+	attributeAffects(aRGBAMultiplier, aOutputColor);
 	attributeAffects(aIncludeTranslateX, aOutputColor);
 	attributeAffects(aIncludeTranslateY, aOutputColor);
 	attributeAffects(aIncludeTranslateZ, aOutputColor);
@@ -304,6 +353,10 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputInterpolate);
 	attributeAffects(aGlobalSigma, aOutputInterpolate);
 	attributeAffects(aUseGlobalSigma, aOutputInterpolate);
+	attributeAffects(aTranslateMultiplier, aOutputInterpolate);
+	attributeAffects(aRotateMultiplier, aOutputInterpolate);
+	attributeAffects(aScaleMultiplier, aOutputInterpolate);
+	attributeAffects(aRGBAMultiplier, aOutputInterpolate);
 	attributeAffects(aIncludeTranslateX, aOutputInterpolate);
 	attributeAffects(aIncludeTranslateY, aOutputInterpolate);
 	attributeAffects(aIncludeTranslateZ, aOutputInterpolate);
@@ -326,6 +379,10 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputSigma);
 	attributeAffects(aGlobalSigma, aOutputSigma);
 	attributeAffects(aUseGlobalSigma, aOutputSigma);
+	attributeAffects(aTranslateMultiplier, aOutputSigma);
+	attributeAffects(aRotateMultiplier, aOutputSigma);
+	attributeAffects(aScaleMultiplier, aOutputSigma);
+	attributeAffects(aRGBAMultiplier, aOutputSigma);
 	attributeAffects(aIncludeTranslateX, aOutputSigma);
 	attributeAffects(aIncludeTranslateY, aOutputSigma);
 	attributeAffects(aIncludeTranslateZ, aOutputSigma);
@@ -402,7 +459,7 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 	double3 &poseColor = data.inputValue(aPoseColor).asDouble3();
 
 	poseVec_.resize(maxDim_);
-	poseVec_ << poseTrsX, poseTrsY, poseTrsZ, poseAxis.x, poseAxis.y, poseAxis.z, poseAngle, poseColor[0], poseColor[1], poseColor[2];
+	poseVec_ << poseTrsX, poseTrsY, poseTrsZ, poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w, poseColor[0], poseColor[1], poseColor[2];
 
 	// Get target matrix and color array handles + target count, resize vectors and arrays
 	MArrayDataHandle hArrayTarget = data.inputArrayValue(aTarget);
@@ -439,7 +496,7 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 		quat.getAxisAngle(axis, angle);
 		
 		Eigen::VectorXd vec(maxDim_);
-		vec << trsX, trsY, trsZ, axis.x, axis.y, axis.z, angle, color[0], color[1], color[2];
+		vec << trsX, trsY, trsZ, quat.x, quat.y, quat.z, quat.w, color[0], color[1], color[2];
 
 		// Apply include vector, acts as a gate for passing values
 		for (unsigned int j = 0; j < maxDim_; ++j)
