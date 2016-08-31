@@ -45,11 +45,18 @@ public:
 
 	// Input pose connections
 	static MObject aPoseMatrix;
+	static MObject aPoseRotateLocX;
+	static MObject aPoseRotateLocY;
+	static MObject aPoseRotateLocZ;
+	static MObject aPoseRotateOffset;
 	static MObject aPoseColor;
 	static MObject aPoseTransparency;
 
 	// Input target connections
 	static MObject aTargetMatrix;
+	static MObject aRotateLocX;
+	static MObject aRotateLocY;
+	static MObject aRotateLocZ;
 	static MObject aTargetColor;
 	static MObject aTargetTransparency;
 	static MObject aTargetSigma;

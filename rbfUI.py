@@ -231,16 +231,17 @@ class TestUI(qg.QDialog):
         # Only create one sigma blinn material
         if self.sigma_chk.isChecked():
             self.sigma_shader = pm.shadingNode("lambert", asShader=True, name="sigmaLmbt")
-            pmc.setAttr(self.sigma_shader.color.colorR, 0.0)
-            pmc.setAttr(self.sigma_shader.color.colorG, 0.5)
-            pmc.setAttr(self.sigma_shader.color.colorB, 1.0)
-            pmc.setAttr(self.sigma_shader.transparency, (0.85, 0.85, 0.85))
+            pm.setAttr(self.sigma_shader.color.colorR, 0.0)
+            pm.setAttr(self.sigma_shader.color.colorG, 0.5)
+            pm.setAttr(self.sigma_shader.color.colorB, 1.0)
+            pm.setAttr(self.sigma_shader.transparency, (0.85, 0.85, 0.85))
             self.sigma_sg = pm.sets(renderable=1, noSurfaceShader=1, empty=1, n="sigmaLmbt_SG")
             pm.connectAttr(self.sigma_shader.outColor, self.sigma_sg.surfaceShader)
             self.falloff_group = pm.group(empty=1, n="GRP_rbf_falloff")
             
-        # Connect pose matrix
+        # Connect pose attrs
         if len(self.pose) == 1:
+            # Connect pose matrix
             if self.matrix_chk.isChecked() == True:
                 if self.world_rad.isChecked() == True:
                     pm.connectAttr(self.pose[0][0].worldMatrix[0], rbf.poseMatrix)
@@ -278,14 +279,16 @@ class TestUI(qg.QDialog):
                 print "Pose " + self.pose[0][0] + " was removed from target list but kept as input pose."
                 self.targets.remove(self.pose[0][0])
 
-        # Connect pose matrices
+        # Connect target attrs
         for i in range(0, len(self.targets)):
+            # Connect target matrix
             if self.matrix_chk.isChecked() == True:
                 if self.world_rad.isChecked() == True:
                     pm.connectAttr(self.targets[i].worldMatrix[0], rbf.target[i].targetMatrix)
                 else:
                     pm.connectAttr(self.targets[i].parentMatrix[0], rbf.target[i].targetMatrix)
             
+            # Connect target rbga
             if self.rgb_chk.isChecked() == True or self.alpha_chk.isChecked() == True:
                 shape = pm.listRelatives(self.targets[i], shapes=1)[0]
                 shader_grp = pm.listConnections(shape, type='shadingEngine')
@@ -306,8 +309,53 @@ class TestUI(qg.QDialog):
                             pm.connectAttr(shader.outTransparency, rbf.target[i].targetTransparency)
                         except:
                             pass
+
+            # Build target rotate locators
+            locX = pm.spaceLocator(n=self.targets[i] + '_rotLocX')
+            locY = pm.spaceLocator(n=self.targets[i] + '_rotLocY')
+            locZ = pm.spaceLocator(n=self.targets[i] + '_rotLocZ')
+
+            pm.parent(locX, locY, locZ, self.targets[i])
+
+            pm.setAttr(locX.translate, (0, 0, 0))
+            pm.setAttr(locY.translate, (0, 0, 0))
+            pm.setAttr(locZ.translate, (0, 0, 0))
+
+            mult = pm.createNode('multiplyDivide', n='MULTinv_' + self.targets[i])
+            pm.setAttr(mult.operation, 2)
+            pm.setAttr(mult.input1X, 1)
+            pm.setAttr(mult.input1Y, 1)
+            pm.setAttr(mult.input1Z, 1)
+
+            pm.connectAttr(self.targets[i].scale, mult.input2)
+
+            pm.connectAttr(mult.output, locX.scale)
+            pm.connectAttr(mult.output, locY.scale)
+            pm.connectAttr(mult.output, locZ.scale)
+
+            mult_neg = pm.createNode('multiplyDivide', n='MULTneg_' + self.targets[i])
+            pm.setAttr(mult_neg.operation, 1)
+            pm.setAttr(mult_neg.input1X, -1)
+            pm.setAttr(mult_neg.input1Y, -1)
+            pm.setAttr(mult_neg.input1Z, -1)
+
+            pm.connectAttr(rbf.poseRotateOffset, locX.tx)
+            pm.connectAttr(rbf.poseRotateOffset, locY.ty)
+            pm.connectAttr(rbf.poseRotateOffset, locZ.tz)
+
+            pm.connectAttr(rbf.poseRotateOffset, mult_neg.input2X)
+            pm.connectAttr(rbf.poseRotateOffset, mult_neg.input2Y)
+            pm.connectAttr(rbf.poseRotateOffset, mult_neg.input2Z)
+
+            pm.connectAttr(mult_neg.outputX, locX.scalePivotX)
+            pm.connectAttr(mult_neg.outputY, locY.scalePivotY)
+            pm.connectAttr(mult_neg.outputZ, locZ.scalePivotZ)
+
+            #pm.setAttr(locX.visibility, 0)
+            #pm.setAttr(locY.visibility, 0)
+            #pm.setAttr(locZ.visibility, 0)
             
-            # Build alias attrs on RBF node
+            # Build target alias attrs on RBF node
             if self.alias_chk.isChecked():
                 alias = self.targets[i]
                 if '|' in alias:
@@ -324,8 +372,6 @@ class TestUI(qg.QDialog):
             if self.sigma_chk.isChecked():
                 bb = pm.xform(self.targets[i], q=1, bb=1)
                 scale = bb[3] - bb[0]
-                print "radius =="
-                print scale/2
                 ### hard coding sphere radius from trial and error
                 sphere = pm.polySphere(r=5.0, sx=20, sy=20, ax=(0,1,0), ch=0, n=str(self.targets[i]) + '_falloff')
                 sphereShp = pm.listRelatives(sphere, s=1)

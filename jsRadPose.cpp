@@ -29,10 +29,17 @@ MObject JSRadPose::aIncludeA;
 MObject JSRadPose::aInputIncludes;
 
 MObject JSRadPose::aPoseMatrix;
+MObject JSRadPose::aPoseRotateLocX;
+MObject JSRadPose::aPoseRotateLocY;
+MObject JSRadPose::aPoseRotateLocZ;
+MObject JSRadPose::aPoseRotateOffset;
 MObject JSRadPose::aPoseColor;
 MObject JSRadPose::aPoseTransparency;
 
 MObject JSRadPose::aTargetMatrix;
+MObject JSRadPose::aRotateLocX;
+MObject JSRadPose::aRotateLocY;
+MObject JSRadPose::aRotateLocZ;
 MObject JSRadPose::aTargetColor;
 MObject JSRadPose::aTargetTransparency;
 MObject JSRadPose::aTargetSigma;
@@ -162,6 +169,18 @@ MStatus JSRadPose::initialize()
 	fnMatrix.setStorable(true);
 	addAttribute(aPoseMatrix);
 
+	aPoseRotateLocX = fnMatrix.create("poseRotateLocX", "poseRotateLocX");
+	addAttribute(aPoseRotateLocX);
+
+	aPoseRotateLocY = fnMatrix.create("poseRotateLocY", "poseRotateLocY");
+	addAttribute(aPoseRotateLocY);
+
+	aPoseRotateLocZ = fnMatrix.create("poseRotateLocZ", "poseRotateLocZ");
+	addAttribute(aPoseRotateLocZ);
+
+	aPoseRotateOffset = fnNumeric.create("poseRotateOffset", "poseRotateOffset", MFnNumericData::kDouble, 5.0);
+	addAttribute(aPoseRotateOffset);
+
 	aPoseColor = fnNumeric.create("poseColor", "poseColor", MFnNumericData::k3Double);
 	fnNumeric.setKeyable(true);
 	fnNumeric.setStorable(true);
@@ -174,6 +193,18 @@ MStatus JSRadPose::initialize()
 	
 	// Input target connections
 	aTargetMatrix = fnMatrix.create("targetMatrix", "targetMatrix");
+	fnMatrix.setKeyable(true);
+	fnMatrix.setStorable(true);
+
+	aRotateLocX = fnMatrix.create("rotateLocX", "rotateLocX");
+	fnMatrix.setKeyable(true);
+	fnMatrix.setStorable(true);
+
+	aRotateLocY = fnMatrix.create("rotateLocY", "rotateLocY");
+	fnMatrix.setKeyable(true);
+	fnMatrix.setStorable(true);
+
+	aRotateLocZ = fnMatrix.create("rotateLocZ", "rotateLocZ");
 	fnMatrix.setKeyable(true);
 	fnMatrix.setStorable(true);
 
@@ -192,6 +223,9 @@ MStatus JSRadPose::initialize()
 
 	aTarget = fnCompound.create("target", "target");
 	fnCompound.addChild(aTargetMatrix);
+	fnCompound.addChild(aRotateLocX);
+	fnCompound.addChild(aRotateLocY);
+	fnCompound.addChild(aRotateLocZ);
 	fnCompound.addChild(aTargetColor);
 	fnCompound.addChild(aTargetTransparency);
 	fnCompound.addChild(aTargetSigma);
