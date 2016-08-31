@@ -9,11 +9,8 @@ MObject JSRadPose::aFunctionType;
 MObject JSRadPose::aHeight;
 MObject JSRadPose::aGlobalSigma;
 MObject JSRadPose::aUseGlobalSigma;
-
-MObject JSRadPose::aTranslateMultiplier;
-MObject JSRadPose::aRotateMultiplier;
-MObject JSRadPose::aScaleMultiplier;
-MObject JSRadPose::aRGBAMultiplier;
+MObject JSRadPose::aPoseRotateOffset;
+MObject JSRadPose::aRotateLocatorsVisible;
 
 MObject JSRadPose::aIncludeTranslateX;
 MObject JSRadPose::aIncludeTranslateY;
@@ -32,7 +29,6 @@ MObject JSRadPose::aPoseMatrix;
 MObject JSRadPose::aPoseRotateLocX;
 MObject JSRadPose::aPoseRotateLocY;
 MObject JSRadPose::aPoseRotateLocZ;
-MObject JSRadPose::aPoseRotateOffset;
 MObject JSRadPose::aPoseColor;
 MObject JSRadPose::aPoseTransparency;
 
@@ -103,26 +99,12 @@ MStatus JSRadPose::initialize()
 	fnNumeric.setMin(0.00000001);
 	addAttribute(aUseGlobalSigma);
 
-	// Multiplier attrs for adjusting relative weights of translate/rotate/scale/rgba
-	aTranslateMultiplier = fnNumeric.create("translationMultiplier", "translationMultiplier", MFnNumericData::kDouble, 1.0);
-	fnNumeric.setKeyable(true);
-	fnNumeric.setSoftMax(true);
-	addAttribute(aTranslateMultiplier);
+	aPoseRotateOffset = fnNumeric.create("rotateLocatorOffset", "rotateLocatorOffset", MFnNumericData::kDouble, 15.0);
+	addAttribute(aPoseRotateOffset);
 
-	aRotateMultiplier = fnNumeric.create("rotationMultiplier", "rotationMultiplier", MFnNumericData::kDouble, 1.0);
-	fnNumeric.setKeyable(true);
-	fnNumeric.setSoftMax(true);
-	addAttribute(aRotateMultiplier);
-
-	aScaleMultiplier = fnNumeric.create("scaleMultiplier", "scaleMultiplier", MFnNumericData::kDouble, 1.0);
-	fnNumeric.setKeyable(true);
-	fnNumeric.setSoftMax(true);
-	addAttribute(aScaleMultiplier);
-
-	aRGBAMultiplier = fnNumeric.create("rgbaMultiplier", "rgbaMultiplier", MFnNumericData::kDouble, 1.0);
-	fnNumeric.setKeyable(true);
-	fnNumeric.setSoftMax(true);
-	addAttribute(aRGBAMultiplier);
+	aRotateLocatorsVisible = fnNumeric.create("rotateLocatorsVisible", "rotateLocatorsVisible", MFnNumericData::kBoolean);
+	fnNumeric.setDefault(false);
+	addAttribute(aRotateLocatorsVisible);
 
 	// Input include booleans
 	aIncludeTranslateX = fnNumeric.create("includeInputTranslateX", "includeInputTranslateX", MFnNumericData::kBoolean, true);
@@ -177,9 +159,6 @@ MStatus JSRadPose::initialize()
 
 	aPoseRotateLocZ = fnMatrix.create("poseRotateLocZ", "poseRotateLocZ");
 	addAttribute(aPoseRotateLocZ);
-
-	aPoseRotateOffset = fnNumeric.create("poseRotateOffset", "poseRotateOffset", MFnNumericData::kDouble, 5.0);
-	addAttribute(aPoseRotateOffset);
 
 	aPoseColor = fnNumeric.create("poseColor", "poseColor", MFnNumericData::k3Double);
 	fnNumeric.setKeyable(true);
@@ -280,10 +259,7 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputTranslateX);
 	attributeAffects(aGlobalSigma, aOutputTranslateX);
 	attributeAffects(aUseGlobalSigma, aOutputTranslateX);
-	attributeAffects(aTranslateMultiplier, aOutputTranslateX);
-	attributeAffects(aRotateMultiplier, aOutputTranslateX);
-	attributeAffects(aScaleMultiplier, aOutputTranslateX);
-	attributeAffects(aRGBAMultiplier, aOutputTranslateX);
+	attributeAffects(aPoseRotateOffset, aOutputTranslateX);
 	attributeAffects(aIncludeTranslateX, aOutputTranslateX);
 	attributeAffects(aIncludeTranslateY, aOutputTranslateX);
 	attributeAffects(aIncludeTranslateZ, aOutputTranslateX);
@@ -307,10 +283,7 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputTranslateY);
 	attributeAffects(aGlobalSigma, aOutputTranslateY);
 	attributeAffects(aUseGlobalSigma, aOutputTranslateY);
-	attributeAffects(aTranslateMultiplier, aOutputTranslateY);
-	attributeAffects(aRotateMultiplier, aOutputTranslateY);
-	attributeAffects(aScaleMultiplier, aOutputTranslateY);
-	attributeAffects(aRGBAMultiplier, aOutputTranslateY);
+	attributeAffects(aPoseRotateOffset, aOutputTranslateY);
 	attributeAffects(aIncludeTranslateX, aOutputTranslateY);
 	attributeAffects(aIncludeTranslateY, aOutputTranslateY);
 	attributeAffects(aIncludeTranslateZ, aOutputTranslateY);
@@ -334,10 +307,7 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputTranslateZ);
 	attributeAffects(aGlobalSigma, aOutputTranslateZ);
 	attributeAffects(aUseGlobalSigma, aOutputTranslateZ);
-	attributeAffects(aTranslateMultiplier, aOutputTranslateZ);
-	attributeAffects(aRotateMultiplier, aOutputTranslateZ);
-	attributeAffects(aScaleMultiplier, aOutputTranslateZ);
-	attributeAffects(aRGBAMultiplier, aOutputTranslateZ);
+	attributeAffects(aPoseRotateOffset, aOutputTranslateZ);
 	attributeAffects(aIncludeTranslateX, aOutputTranslateZ);
 	attributeAffects(aIncludeTranslateY, aOutputTranslateZ);
 	attributeAffects(aIncludeTranslateZ, aOutputTranslateZ);
@@ -361,10 +331,7 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputColor);
 	attributeAffects(aGlobalSigma, aOutputColor);
 	attributeAffects(aUseGlobalSigma, aOutputColor);
-	attributeAffects(aTranslateMultiplier, aOutputColor);
-	attributeAffects(aRotateMultiplier, aOutputColor);
-	attributeAffects(aScaleMultiplier, aOutputColor);
-	attributeAffects(aRGBAMultiplier, aOutputColor);
+	attributeAffects(aPoseRotateOffset, aOutputColor);
 	attributeAffects(aIncludeTranslateX, aOutputColor);
 	attributeAffects(aIncludeTranslateY, aOutputColor);
 	attributeAffects(aIncludeTranslateZ, aOutputColor);
@@ -387,10 +354,7 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputInterpolate);
 	attributeAffects(aGlobalSigma, aOutputInterpolate);
 	attributeAffects(aUseGlobalSigma, aOutputInterpolate);
-	attributeAffects(aTranslateMultiplier, aOutputInterpolate);
-	attributeAffects(aRotateMultiplier, aOutputInterpolate);
-	attributeAffects(aScaleMultiplier, aOutputInterpolate);
-	attributeAffects(aRGBAMultiplier, aOutputInterpolate);
+	attributeAffects(aPoseRotateOffset, aOutputInterpolate);
 	attributeAffects(aIncludeTranslateX, aOutputInterpolate);
 	attributeAffects(aIncludeTranslateY, aOutputInterpolate);
 	attributeAffects(aIncludeTranslateZ, aOutputInterpolate);
@@ -413,10 +377,7 @@ MStatus JSRadPose::initialize()
 	attributeAffects(aHeight, aOutputSigma);
 	attributeAffects(aGlobalSigma, aOutputSigma);
 	attributeAffects(aUseGlobalSigma, aOutputSigma);
-	attributeAffects(aTranslateMultiplier, aOutputSigma);
-	attributeAffects(aRotateMultiplier, aOutputSigma);
-	attributeAffects(aScaleMultiplier, aOutputSigma);
-	attributeAffects(aRGBAMultiplier, aOutputSigma);
+	attributeAffects(aPoseRotateOffset, aOutputSigma);
 	attributeAffects(aIncludeTranslateX, aOutputSigma);
 	attributeAffects(aIncludeTranslateY, aOutputSigma);
 	attributeAffects(aIncludeTranslateZ, aOutputSigma);
@@ -449,7 +410,7 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 	}
 	
 	// Hard code maximum input dimensions for now
-	maxDim_ = 10;
+	maxDim_ = 15;
 
 	// Get include values and build vector to multiply against actual inputs, acts as a gate for passing values
 	double inclTrsX = static_cast<double>(data.inputValue(aIncludeTranslateX).asBool());
@@ -460,40 +421,31 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 	double inclG = static_cast<double>(data.inputValue(aIncludeG).asBool());
 	double inclB = static_cast<double>(data.inputValue(aIncludeB).asBool());
 	includeVec_.resize(maxDim_);
-	includeVec_ << inclTrsX, inclTrsY, inclTrsZ, inclRot, inclRot, inclRot, inclRot, inclR, inclG, inclB;
+	includeVec_ << inclTrsX, inclTrsY, inclTrsZ, inclRot, inclRot, inclRot, inclRot, inclRot, inclRot, inclRot, inclRot, inclRot, inclR, inclG, inclB;
 
-	// Get multiplier values and build vector to multiply against includeVec_
-	double trsMult = data.inputValue(aTranslateMultiplier).asDouble();
-	double rotMult = data.inputValue(aRotateMultiplier).asDouble();
-	double sclMult = data.inputValue(aScaleMultiplier).asDouble();
-	double rgbaMult = data.inputValue(aRGBAMultiplier).asDouble();
-	multVec_.resize(maxDim_);
-	multVec_ << trsMult, trsMult, trsMult, rotMult, rotMult, rotMult, 1.0, rgbaMult, rgbaMult, rgbaMult;
-
-	// Multiply includeVec_ values against corresponding multiplier values
-	for (unsigned int i = 0; i < maxDim_; ++i)
-	{
-		includeVec_[i] *= multVec_[i];
-	}
 
 	// Get RBF values
 	ftype_ = data.inputValue(aFunctionType).asShort();
 	height_ = data.inputValue(aHeight).asDouble();
 	globalSigma = data.inputValue(aGlobalSigma).asDouble();
 	usesGlobalSigma_ = data.inputValue(aUseGlobalSigma).asBool();
+	rotateOffset_ = data.inputValue(aPoseRotateOffset).asDouble();
 
 	// Get pose matrix and color values
 	MMatrix poseMatrix = data.inputValue(aPoseMatrix).asMatrix();
+	MMatrix poseRotLocMtxX = data.inputValue(aPoseRotateLocX).asMatrix();
+	MMatrix poseRotLocMtxY = data.inputValue(aPoseRotateLocY).asMatrix();
+	MMatrix poseRotLocMtxZ = data.inputValue(aPoseRotateLocZ).asMatrix();
+
 	double poseTrsX = poseMatrix[3][0]; double poseTrsY = poseMatrix[3][1]; double poseTrsZ = poseMatrix[3][2];
-	MQuaternion poseQuat = MTransformationMatrix(poseMatrix).rotation();
-	MEulerRotation poseEu = MTransformationMatrix(poseMatrix).eulerRotation();
-	MVector poseAxis;
-	double poseAngle;
-	poseQuat.getAxisAngle(poseAxis, poseAngle);
+	double poseRotXX = poseRotLocMtxX[3][0]; double poseRotXY = poseRotLocMtxX[3][1]; double poseRotXZ = poseRotLocMtxX[3][2];
+	double poseRotYX = poseRotLocMtxY[3][0]; double poseRotYY = poseRotLocMtxY[3][1]; double poseRotYZ = poseRotLocMtxY[3][2];
+	double poseRotZX = poseRotLocMtxZ[3][0]; double poseRotZY = poseRotLocMtxZ[3][2]; double poseRotZZ = poseRotLocMtxZ[3][2];
+
 	double3 &poseColor = data.inputValue(aPoseColor).asDouble3();
 
 	poseVec_.resize(maxDim_);
-	poseVec_ << poseTrsX, poseTrsY, poseTrsZ, poseQuat.x, poseQuat.y, poseQuat.z, poseQuat.w, poseColor[0], poseColor[1], poseColor[2];
+	poseVec_ << poseTrsX, poseTrsY, poseTrsZ, poseRotXX, poseRotXY, poseRotXZ, poseRotYX, poseRotYY, poseRotYZ, poseRotZX, poseRotZY, poseRotZZ, poseColor[0], poseColor[1], poseColor[2];
 
 	// Get target matrix and color array handles + target count, resize vectors and arrays
 	MArrayDataHandle hArrayTarget = data.inputArrayValue(aTarget);
@@ -519,18 +471,19 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 		hArrayTarget.jumpToElement(i);
 		MDataHandle hTarget = hArrayTarget.outputValue();
 		double3 &color = hTarget.child(aTargetColor).asDouble3();
-		MMatrix matrix = hTarget.child(aTargetMatrix).asMatrix();
 		double localSigma = hTarget.child(aTargetSigma).asDouble();
+		MMatrix matrix = hTarget.child(aTargetMatrix).asMatrix();
+		MMatrix locMtxX = hTarget.child(aRotateLocX).asMatrix();
+		MMatrix locMtxY = hTarget.child(aRotateLocY).asMatrix();
+		MMatrix locMtxZ = hTarget.child(aRotateLocZ).asMatrix();
 
 		double trsX = matrix[3][0];	double trsY = matrix[3][1]; double trsZ = matrix[3][2];
-		MQuaternion quat = MTransformationMatrix(matrix).rotation();
-		MEulerRotation eu = MTransformationMatrix(matrix).eulerRotation();
-		MVector axis;
-		double angle;
-		quat.getAxisAngle(axis, angle);
-		
+		double locRotXX = locMtxX[3][0]; double locRotXY = locMtxX[3][1]; double locRotXZ = locMtxX[3][2];
+		double locRotYX = locMtxY[3][0]; double locRotYY = locMtxY[3][1]; double locRotYZ = locMtxY[3][2];
+		double locRotZX = locMtxZ[3][0]; double locRotZY = locMtxZ[3][2]; double locRotZZ = locMtxZ[3][2];
+
 		Eigen::VectorXd vec(maxDim_);
-		vec << trsX, trsY, trsZ, quat.x, quat.y, quat.z, quat.w, color[0], color[1], color[2];
+		vec << trsX, trsY, trsZ, locRotXX, locRotXY, locRotXZ, locRotYX, locRotYY, locRotYZ, locRotZX, locRotZY, locRotZZ, color[0], color[1], color[2];
 
 		// Apply include vector, acts as a gate for passing values
 		for (unsigned int j = 0; j < maxDim_; ++j)
@@ -582,15 +535,15 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 	double outR{ 0.0 };
 	double outG{ 0.0 };
 	double outB{ 0.0 };
-	double poseR = poseVec_[7];
-	double poseG = poseVec_[8];
-	double poseB = poseVec_[9];
+	double poseR = poseVec_[12];
+	double poseG = poseVec_[13];
+	double poseB = poseVec_[14];
 
 	for (unsigned int i = 0; i < targetCount_; ++i)
 	{
-		double inR = targetVecs_[i][7];
-		double inG = targetVecs_[i][8];
-		double inB = targetVecs_[i][9];
+		double inR = targetVecs_[i][12];
+		double inG = targetVecs_[i][13];
+		double inB = targetVecs_[i][14];
 		
 		double rbf = rbfValues_[i];
 		

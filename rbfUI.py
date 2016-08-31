@@ -270,7 +270,63 @@ class TestUI(qg.QDialog):
                         except:
                             pass
 
-        
+            
+            # Build pose rotate locators
+            locX = pm.spaceLocator(n=self.pose[0][0] + '_rotLocX')
+            locY = pm.spaceLocator(n=self.pose[0][0] + '_rotLocY')
+            locZ = pm.spaceLocator(n=self.pose[0][0] + '_rotLocZ')
+
+            pm.parent(locX, locY, locZ, self.pose[0])
+
+            pm.setAttr(locX.translate, (0, 0, 0))
+            pm.setAttr(locY.translate, (0, 0, 0))
+            pm.setAttr(locZ.translate, (0, 0, 0))
+
+            mult = pm.createNode('multiplyDivide', n='MULTinv_' + self.pose[0][0])
+            pm.setAttr(mult.operation, 2)
+            pm.setAttr(mult.input1X, 1)
+            pm.setAttr(mult.input1Y, 1)
+            pm.setAttr(mult.input1Z, 1)
+
+            pm.connectAttr(self.pose[0][0].scale, mult.input2)
+
+            pm.connectAttr(mult.output, locX.scale)
+            pm.connectAttr(mult.output, locY.scale)
+            pm.connectAttr(mult.output, locZ.scale)
+
+            mult_neg = pm.createNode('multiplyDivide', n='MULTneg_' + self.pose[0][0])
+            pm.setAttr(mult_neg.operation, 1)
+            pm.setAttr(mult_neg.input1X, -1)
+            pm.setAttr(mult_neg.input1Y, -1)
+            pm.setAttr(mult_neg.input1Z, -1)
+
+            pm.connectAttr(rbf.rotateLocatorOffset, locX.tx)
+            pm.connectAttr(rbf.rotateLocatorOffset, locY.ty)
+            pm.connectAttr(rbf.rotateLocatorOffset, locZ.tz)
+
+            pm.connectAttr(rbf.rotateLocatorOffset, mult_neg.input2X)
+            pm.connectAttr(rbf.rotateLocatorOffset, mult_neg.input2Y)
+            pm.connectAttr(rbf.rotateLocatorOffset, mult_neg.input2Z)
+
+            pm.connectAttr(mult_neg.outputX, locX.scalePivotX)
+            pm.connectAttr(mult_neg.outputY, locY.scalePivotY)
+            pm.connectAttr(mult_neg.outputZ, locZ.scalePivotZ)
+
+            pm.connectAttr(locX.worldMatrix[0], rbf.poseRotateLocX)
+            pm.connectAttr(locY.worldMatrix[0], rbf.poseRotateLocY)
+            pm.connectAttr(locZ.worldMatrix[0], rbf.poseRotateLocZ)
+
+            pm.connectAttr(rbf.rotateLocatorsVisible, locX.visibility)
+            pm.connectAttr(rbf.rotateLocatorsVisible, locY.visibility)
+            pm.connectAttr(rbf.rotateLocatorsVisible, locZ.visibility)
+
+            pm.setAttr(locX.overrideEnabled, 1)
+            pm.setAttr(locY.overrideEnabled, 1)
+            pm.setAttr(locZ.overrideEnabled, 1)
+            pm.setAttr(locX.overrideColor, 12)
+            pm.setAttr(locY.overrideColor, 23)
+            pm.setAttr(locZ.overrideColor, 29)
+
         # Check target list for pose and duplicates
         if len(self.pose) == 1:
             single_set = set(self.targets)
@@ -310,6 +366,7 @@ class TestUI(qg.QDialog):
                         except:
                             pass
 
+
             # Build target rotate locators
             locX = pm.spaceLocator(n=self.targets[i] + '_rotLocX')
             locY = pm.spaceLocator(n=self.targets[i] + '_rotLocY')
@@ -339,21 +396,25 @@ class TestUI(qg.QDialog):
             pm.setAttr(mult_neg.input1Y, -1)
             pm.setAttr(mult_neg.input1Z, -1)
 
-            pm.connectAttr(rbf.poseRotateOffset, locX.tx)
-            pm.connectAttr(rbf.poseRotateOffset, locY.ty)
-            pm.connectAttr(rbf.poseRotateOffset, locZ.tz)
+            pm.connectAttr(rbf.rotateLocatorOffset, locX.tx)
+            pm.connectAttr(rbf.rotateLocatorOffset, locY.ty)
+            pm.connectAttr(rbf.rotateLocatorOffset, locZ.tz)
 
-            pm.connectAttr(rbf.poseRotateOffset, mult_neg.input2X)
-            pm.connectAttr(rbf.poseRotateOffset, mult_neg.input2Y)
-            pm.connectAttr(rbf.poseRotateOffset, mult_neg.input2Z)
+            pm.connectAttr(rbf.rotateLocatorOffset, mult_neg.input2X)
+            pm.connectAttr(rbf.rotateLocatorOffset, mult_neg.input2Y)
+            pm.connectAttr(rbf.rotateLocatorOffset, mult_neg.input2Z)
 
             pm.connectAttr(mult_neg.outputX, locX.scalePivotX)
             pm.connectAttr(mult_neg.outputY, locY.scalePivotY)
             pm.connectAttr(mult_neg.outputZ, locZ.scalePivotZ)
 
-            #pm.setAttr(locX.visibility, 0)
-            #pm.setAttr(locY.visibility, 0)
-            #pm.setAttr(locZ.visibility, 0)
+            pm.connectAttr(locX.worldMatrix[0], rbf.target[i].rotateLocX)
+            pm.connectAttr(locY.worldMatrix[0], rbf.target[i].rotateLocY)
+            pm.connectAttr(locZ.worldMatrix[0], rbf.target[i].rotateLocZ)
+
+            pm.connectAttr(rbf.rotateLocatorsVisible, locX.visibility)
+            pm.connectAttr(rbf.rotateLocatorsVisible, locY.visibility)
+            pm.connectAttr(rbf.rotateLocatorsVisible, locZ.visibility)
             
             # Build target alias attrs on RBF node
             if self.alias_chk.isChecked():

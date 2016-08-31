@@ -22,12 +22,8 @@ public:
 	static MObject aHeight;
 	static MObject aGlobalSigma;
 	static MObject aUseGlobalSigma;
-
-	// Multiplier attrs for adjusting relative weights of translate/rotate/scale/rgba
-	static MObject aTranslateMultiplier;
-	static MObject aRotateMultiplier;
-	static MObject aScaleMultiplier;
-	static MObject aRGBAMultiplier;
+	static MObject aPoseRotateOffset;
+	static MObject aRotateLocatorsVisible;
 
 	// These two sets allow user to determine which attributes are inputs and outputs
 	static MObject aIncludeTranslateX;
@@ -48,7 +44,6 @@ public:
 	static MObject aPoseRotateLocX;
 	static MObject aPoseRotateLocY;
 	static MObject aPoseRotateLocZ;
-	static MObject aPoseRotateOffset;
 	static MObject aPoseColor;
 	static MObject aPoseTransparency;
 
@@ -88,6 +83,7 @@ private:
 	double height_;
 	double globalSigma;
 	bool usesGlobalSigma_;
+	double rotateOffset_;
 
 	// Multipliers
 	double trsMult_;
