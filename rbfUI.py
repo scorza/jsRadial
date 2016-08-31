@@ -148,7 +148,14 @@ class TestUI(qg.QDialog):
         button_lo.addWidget(close_btn)
         button_lo.addWidget(buildRBF_btn)
         
-        ### Add layouts to tab pages
+        ###### Edit tab page ######################################################################
+        coming_lbl = qg.QLabel('Coming soon')
+        coming_lo = qg.QHBoxLayout()
+        coming_lo.addWidget(coming_lbl)
+        edit_lo.addLayout(coming_lo)
+
+
+        ### Add layouts to tab pages ##############################################################
         create_lo.addLayout(pose_lo)
         create_lo.addLayout(target_lo)
         create_lo.addLayout(checks_lo)
@@ -162,8 +169,8 @@ class TestUI(qg.QDialog):
         main_lo.addWidget(tab_widget)
         self.setLayout(main_lo)
         main_lo.setContentsMargins(10,10,10,10)
-        
-        ### Create connections
+         
+        ### Create connections ####################################################################
         addPose_btn.clicked.connect(self.add_pose)
         removePose_btn.clicked.connect(self.remove_pose)
         
@@ -234,7 +241,7 @@ class TestUI(qg.QDialog):
             pm.setAttr(self.sigma_shader.color.colorR, 0.0)
             pm.setAttr(self.sigma_shader.color.colorG, 0.5)
             pm.setAttr(self.sigma_shader.color.colorB, 1.0)
-            pm.setAttr(self.sigma_shader.transparency, (0.85, 0.85, 0.85))
+            pm.setAttr(self.sigma_shader.transparency, (0.95, 0.95, 0.95))
             self.sigma_sg = pm.sets(renderable=1, noSurfaceShader=1, empty=1, n="sigmaLmbt_SG")
             pm.connectAttr(self.sigma_shader.outColor, self.sigma_sg.surfaceShader)
             self.falloff_group = pm.group(empty=1, n="GRP_rbf_falloff")
@@ -415,6 +422,13 @@ class TestUI(qg.QDialog):
             pm.connectAttr(rbf.rotateLocatorsVisible, locX.visibility)
             pm.connectAttr(rbf.rotateLocatorsVisible, locY.visibility)
             pm.connectAttr(rbf.rotateLocatorsVisible, locZ.visibility)
+
+            pm.setAttr(locX.overrideEnabled, 1)
+            pm.setAttr(locY.overrideEnabled, 1)
+            pm.setAttr(locZ.overrideEnabled, 1)
+            pm.setAttr(locX.overrideColor, 12)
+            pm.setAttr(locY.overrideColor, 23)
+            pm.setAttr(locZ.overrideColor, 29)
             
             # Build target alias attrs on RBF node
             if self.alias_chk.isChecked():

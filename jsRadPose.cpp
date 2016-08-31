@@ -103,7 +103,7 @@ MStatus JSRadPose::initialize()
 	addAttribute(aPoseRotateOffset);
 
 	aRotateLocatorsVisible = fnNumeric.create("rotateLocatorsVisible", "rotateLocatorsVisible", MFnNumericData::kBoolean);
-	fnNumeric.setDefault(false);
+	fnNumeric.setDefault(true);
 	addAttribute(aRotateLocatorsVisible);
 
 	// Input include booleans
