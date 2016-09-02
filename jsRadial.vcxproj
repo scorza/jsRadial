@@ -31,6 +31,7 @@
     <ClCompile Include="pluginMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AEjsRadPoseTemplate.mel" />
     <None Include="rbfUI.py" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

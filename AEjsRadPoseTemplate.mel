@@ -1,0 +1,19 @@
+global proc AEjsRadPoseTemplate(string $nodeName) {
+	editorTemplate -beginScrollLayout;
+
+    editorTemplate -beginLayout "RBF Node Attributes" -collapse 0;
+        editorTemplate -addControl "functionType";
+        editorTemplate -addControl "height";
+        editorTemplate -addControl "globalSigma";
+        editorTemplate -addControl "useGlobalSigma";
+        editorTemplate -addControl "rotateLocatorOffset";
+        editorTemplate -addControl "rotateLocatorsVisible";
+
+        editorTemplate -addControl "inputIncludes";
+
+	editorTemplate -endLayout;
+
+	editorTemplate -addExtraControls;
+	editorTemplate -endScrollLayout;
+
+}

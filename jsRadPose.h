@@ -102,4 +102,7 @@ private:
 	MDoubleArray sigmas_;
 	MDoubleArray rbfValues_;
 
+	// Benchmark only
+	int msTotal_;
+	int clockCounter_;
 };

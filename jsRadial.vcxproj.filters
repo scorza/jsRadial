@@ -46,5 +46,8 @@
     <None Include="rbfUI.py">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="AEjsRadPoseTemplate.mel">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

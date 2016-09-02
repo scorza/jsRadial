@@ -1,6 +1,11 @@
 #include "common.h"
 #include "jsRadPose.h"
 
+using std::chrono::microseconds;
+using std::chrono::duration_cast;
+typedef std::chrono::high_resolution_clock Clock;
+
+
 const char* JSRadPose::kName = "jsRadPose";
 MTypeId JSRadPose::kId(0x00000005);
 
@@ -149,25 +154,31 @@ MStatus JSRadPose::initialize()
 	aPoseMatrix = fnMatrix.create("poseMatrix", "poseMatrix");
 	fnMatrix.setKeyable(true);
 	fnMatrix.setStorable(true);
+	fnMatrix.setHidden(true);
 	addAttribute(aPoseMatrix);
 
 	aPoseRotateLocX = fnMatrix.create("poseRotateLocX", "poseRotateLocX");
+	fnMatrix.setHidden(true);
 	addAttribute(aPoseRotateLocX);
 
 	aPoseRotateLocY = fnMatrix.create("poseRotateLocY", "poseRotateLocY");
+	fnMatrix.setHidden(true);
 	addAttribute(aPoseRotateLocY);
 
 	aPoseRotateLocZ = fnMatrix.create("poseRotateLocZ", "poseRotateLocZ");
+	fnMatrix.setHidden(true);
 	addAttribute(aPoseRotateLocZ);
 
 	aPoseColor = fnNumeric.create("poseColor", "poseColor", MFnNumericData::k3Double);
 	fnNumeric.setKeyable(true);
 	fnNumeric.setStorable(true);
+	fnNumeric.setHidden(true);
 	addAttribute(aPoseColor);
 
 	aPoseTransparency = fnNumeric.create("poseTransparency", "poseTransparency", MFnNumericData::k3Double);
 	fnNumeric.setKeyable(true);
 	fnNumeric.setStorable(true);
+	fnNumeric.setHidden(true);
 	addAttribute(aPoseTransparency);
 	
 	// Input target connections
@@ -402,6 +413,7 @@ MStatus JSRadPose::initialize()
 
 MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 {
+	auto t0 = Clock::now(); //////////////////////////// BENCHMARK /////////////////////////////
 	MStatus status;
 	// Check plug
 	if ( plug != aOutputColor && plug != aOutputInterpolate && plug != aOutputSigma)
@@ -608,6 +620,20 @@ MStatus JSRadPose::compute(const MPlug &plug, MDataBlock &data)
 	data.setClean(aOutputTransparency);
 	data.setClean(aOutputInterpolate);
 	data.setClean(aOutputSigma);
+
+	auto t1 = Clock::now(); //////////////////////////// BENCHMARK /////////////////////////////
+
+	long long duration = duration_cast<microseconds>(t1 - t0).count();
+	msTotal_ += duration;
+
+	if (clockCounter_ >= 100)
+	{
+		cout << "compute took " << msTotal_ / double(100) << " microseconds" << endl;
+		clockCounter_ = 0;
+		msTotal_ = 0;
+	}
+	clockCounter_++;
+	
 	
 	return MS::kSuccess;
 }
